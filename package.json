@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "node build.cjs"
+  },
+  "dependencies": {
+    "adm-zip": "0.5.16"
+  }
+}
