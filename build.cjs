@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { gunzipSync } = require("zlib");
 const sharp = require("sharp");
 
 function readPayload(dirName) {
@@ -22,15 +23,15 @@ async function main() {
   const assets = path.join(articleDir, "assets");
   fs.mkdirSync(assets, { recursive: true });
 
-  const article = readPayload("article-payload");
+  const article = gunzipSync(readPayload("article-gzip-payload"));
   fs.writeFileSync(path.join(articleDir, "index.html"), article);
 
   const hero = readPayload("hero-payload");
   const metadata = await sharp(hero).metadata();
-  if (metadata.width !== 1200 || metadata.height !== 900) {
+  if (metadata.width !== 1024 || metadata.height !== 768) {
     throw new Error(`Unexpected hero dimensions: ${metadata.width}x${metadata.height}`);
   }
-  fs.writeFileSync(path.join(assets, "trump-ai-satira.jpg"), hero);
+  fs.writeFileSync(path.join(assets, "trump-ai-satira.webp"), hero);
 
   await sharp(hero)
     .resize(1200, 630, { fit: "cover", position: "centre" })
@@ -41,7 +42,7 @@ async function main() {
     "index.html",
     "404.html",
     "article/trump-prega-ia/index.html",
-    "article/trump-prega-ia/assets/trump-ai-satira.jpg",
+    "article/trump-prega-ia/assets/trump-ai-satira.webp",
     "article/trump-prega-ia/assets/og-trump-ai.jpg"
   ]) {
     if (!fs.existsSync(path.join(out, required))) {
